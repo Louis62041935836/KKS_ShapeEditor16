@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A7A5483A-C408-4B56-8B5E-FE4E15EB2C7F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KKS_ShapeEditor</RootNamespace>
+    <AssemblyName>KKS_ShapeEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\BepInEx\core\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="HS2API">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\BepInEx\Plugins\HS2API.dll</HintPath>
+    </Reference>
+    <Reference Include="HS2_ExtensibleSaveFormat">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\BepInEx\Plugins\HS2_BepisPlugins\HS2_ExtensibleSaveFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="IL">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\IL.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\System.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>D:\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R16\StudioNEOV2_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="KKShapeEditor\BlendShapeRebuildCache.cs" />
+    <Compile Include="KKShapeEditor\BracketStepRepeater.cs" />
+    <Compile Include="KKShapeEditor\BrushResult.cs" />
+    <Compile Include="KKShapeEditor\CameraControlResolver.cs" />
+    <Compile Include="KKShapeEditor\CharacterSwitchCarryover.cs" />
+    <Compile Include="KKShapeEditor\ControllerResolver.cs" />
+    <Compile Include="KKShapeEditor\CorruptionReason.cs" />
+    <Compile Include="KKShapeEditor\CsbDriver.cs" />
+    <Compile Include="KKShapeEditor\CsbEvaluator.cs" />
+    <Compile Include="KKShapeEditor\DeformData.cs" />
+    <Compile Include="KKShapeEditor\DeformLayer.cs" />
+    <Compile Include="KKShapeEditor\DeltaUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\FaceDeleteUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\FaceRestoreUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\FaceSelectOverlay.cs" />
+    <Compile Include="KKShapeEditor\FalloffMode.cs" />
+    <Compile Include="KKShapeEditor\FileDialogHelper.cs" />
+    <Compile Include="KKShapeEditor\GizmoAxis.cs" />
+    <Compile Include="KKShapeEditor\GizmoMode.cs" />
+    <Compile Include="KKShapeEditor\GizmoSpace.cs" />
+    <Compile Include="KKShapeEditor\IDeformTool.cs" />
+    <Compile Include="KKShapeEditor\InflateTool.cs" />
+    <Compile Include="KKShapeEditor\InputHelper.cs" />
+    <Compile Include="KKShapeEditor\ItemSaveData.cs" />
+    <Compile Include="KKShapeEditor\ItemShapeController.cs" />
+    <Compile Include="KKShapeEditor\IUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\L.cs" />
+    <Compile Include="KKShapeEditor\LayerAddUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\LayerMirror.cs" />
+    <Compile Include="KKShapeEditor\LayerOrderUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\LayerRemoveUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\LayerRenameUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\LayerReorderUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\LayerWeightUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\MakerUI.cs" />
+    <Compile Include="KKShapeEditor\MeshHelper.cs" />
+    <Compile Include="KKShapeEditor\MoveTool.cs" />
+    <Compile Include="KKShapeEditor\MultiDeltaUndoEntry.cs" />
+    <Compile Include="KKShapeEditor\NbbDriver.cs" />
+    <Compile Include="KKShapeEditor\NbbEvaluator.cs" />
+    <Compile Include="KKShapeEditor\PinchTool.cs" />
+    <Compile Include="KKShapeEditor\PresetBundle.cs" />
+    <Compile Include="KKShapeEditor\PresetEntry.cs" />
+    <Compile Include="KKShapeEditor\PresetImporter.cs" />
+    <Compile Include="KKShapeEditor\PresetSerializer.cs" />
+    <Compile Include="KKShapeEditor\PresetTabState.cs" />
+    <Compile Include="KKShapeEditor\Profiling\ShapeEditorProfiler.cs" />
+    <Compile Include="KKShapeEditor\PsdChannel.cs" />
+    <Compile Include="KKShapeEditor\PsdDriver.cs" />
+    <Compile Include="KKShapeEditor\PsdEvaluator.cs" />
+    <Compile Include="KKShapeEditor\RendererCategory.cs" />
+    <Compile Include="KKShapeEditor\SelectionTool.cs" />
+    <Compile Include="KKShapeEditor\ShapeDeformer.cs" />
+    <Compile Include="KKShapeEditor\ShapeEditorController.cs" />
+    <Compile Include="KKShapeEditor\ShapeEditorPlugin.cs" />
+    <Compile Include="KKShapeEditor\ShapeEditorSceneController.cs" />
+    <Compile Include="KKShapeEditor\ShapeEditorWindow.cs" />
+    <Compile Include="KKShapeEditor\ShapePaintOverlay.cs" />
+    <Compile Include="KKShapeEditor\ShapeSerializer.cs" />
+    <Compile Include="KKShapeEditor\SeamlessTool.cs" />
+    <Compile Include="KKShapeEditor\SmoothTool.cs" />
+    <Compile Include="KKShapeEditor\SoftSelectMode.cs" />
+    <Compile Include="KKShapeEditor\SpatialHashGrid.cs" />
+    <Compile Include="KKShapeEditor\StudioUI.cs" />
+    <Compile Include="KKShapeEditor\SubmeshInfo.cs" />
+    <Compile Include="KKShapeEditor\Theme.cs" />
+    <Compile Include="KKShapeEditor\TimelineCompat.cs" />
+    <Compile Include="KKShapeEditor\TimelineRegistry.cs" />
+    <Compile Include="KKShapeEditor\TransformGizmo.cs" />
+    <Compile Include="KKShapeEditor\UI.cs" />
+    <Compile Include="KKShapeEditor\UndoContext.cs" />
+    <Compile Include="KKShapeEditor\UndoStack.cs" />
+    <Compile Include="KKShapeEditor\WeightRemapper.cs" />
+    <Compile Include="KKShapeEditor\WireBundle.cs" />
+    <Compile Include="KKShapeEditor\WireEdge.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RefSafetyRulesAttribute.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
