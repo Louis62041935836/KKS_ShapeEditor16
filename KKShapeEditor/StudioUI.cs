@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KKAPI.Studio;
@@ -135,6 +135,9 @@ namespace KKShapeEditor
 			window.Toggle();
 		}
 
+		/// <summary>
+		/// Находит основное тело персонажа
+		/// </summary>
 		public static Renderer FindCharacterBody(
 			AIChara.ChaControl character)
 		{
@@ -148,6 +151,9 @@ namespace KKShapeEditor
 				.GetComponentInChildren<SkinnedMeshRenderer>(true);
 		}
 
+		/// <summary>
+		/// Находит голову персонажа
+		/// </summary>
 		public static Renderer FindCharacterHead(
 			AIChara.ChaControl character)
 		{
@@ -161,6 +167,9 @@ namespace KKShapeEditor
 				.GetComponentInChildren<SkinnedMeshRenderer>(true);
 		}
 
+		/// <summary>
+		/// Обновляет список доступных персонажей для Seamless Blend
+		/// </summary>
 		private static void RefreshAllSeamlessCharacters()
 		{
 			if (StudioUI._window == null)
@@ -215,9 +224,353 @@ namespace KKShapeEditor
 			}
 		}
 
+		/// <summary>
+		/// Отрисовывает Seamless Blend UI панель
+		/// Используется в ShapeEditorWindow для отрисовки управления Seamless функционалом
+		/// </summary>
+		public static void DrawSeamlessBlendPanel(ShapeEditorWindow window)
+		{
+			if (window == null)
+			{
+				return;
+			}
+
+			GUILayout.Label("Seamless Blend Settings", 
+				new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, 
+				Array.Empty<GUILayoutOption>());
+			
+			GUILayout.Space(8f);
+
+			// ============ Выбор целевого персонажа ============
+			DrawSeamlessCharacterSelector(window);
+
+			GUILayout.Space(6f);
+
+			// ============ Выбор целевых частей ============
+			DrawSeamlessTargetParts(window);
+
+			GUILayout.Space(6f);
+
+			// ============ Режимы смешивания ============
+			DrawSeamlessBlendModes(window);
+
+			GUILayout.Space(6f);
+
+			// ============ Параметры силы смешивания ============
+			DrawSeamlessBlendParameters(window);
+
+			GUILayout.Space(6f);
+
+			// ============ Кнопка применения ============
+			DrawSeamlessApplyButton(window);
+
+			GUILayout.Space(4f);
+
+			// ============ Информация ============
+			DrawSeamlessInfo(window);
+		}
+
+		/// <summary>
+		/// Отрисовывает селектор целевого персонажа
+		/// </summary>
+		private static void DrawSeamlessCharacterSelector(ShapeEditorWindow window)
+		{
+			GUILayout.Label("Target Character", Array.Empty<GUILayoutOption>());
+
+			if (window.SeamlessCharacters == null || window.SeamlessCharacters.Count == 0)
+			{
+				GUILayout.Label("No other characters in scene", 
+					new GUIStyle(GUI.skin.label) { normal = { textColor = Color.gray } },
+					Array.Empty<GUILayoutOption>());
+				return;
+			}
+
+			string[] characterNames = new string[window.SeamlessCharacters.Count];
+			for (int i = 0; i < window.SeamlessCharacters.Count; i++)
+			{
+				ShapeEditorWindow.SeamlessCharacterOption option = window.SeamlessCharacters[i];
+				characterNames[i] = (option != null && !string.IsNullOrEmpty(option.Name))
+					? option.Name
+					: "Character " + i.ToString();
+			}
+
+			int selected = Mathf.Clamp(window.SeamlessCharacterIndex, 0, characterNames.Length - 1);
+			int newSelected = GUILayout.SelectionGrid(selected, characterNames, 1, "Button");
+
+			if (newSelected != selected)
+			{
+				window.SeamlessCharacterIndex = newSelected;
+			}
+		}
+
+		/// <summary>
+		/// Отрисовывает выбор целевых частей тела (Body/Head)
+		/// </summary>
+		private static void DrawSeamlessTargetParts(ShapeEditorWindow window)
+		{
+			GUILayout.Label("Target Parts", Array.Empty<GUILayoutOption>());
+
+			GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+			
+			window.SeamlessBodyEnabled = GUILayout.Toggle(
+				window.SeamlessBodyEnabled,
+				"Body",
+				"Button",
+				Array.Empty<GUILayoutOption>());
+
+			window.SeamlessHeadEnabled = GUILayout.Toggle(
+				window.SeamlessHeadEnabled,
+				"Head",
+				"Button",
+				Array.Empty<GUILayoutOption>());
+
+			GUILayout.EndHorizontal();
+
+			if (!window.SeamlessBodyEnabled && !window.SeamlessHeadEnabled)
+			{
+				GUILayout.Label("At least one part must be selected",
+					new GUIStyle(GUI.skin.label) { normal = { textColor = Color.yellow } },
+					Array.Empty<GUILayoutOption>());
+			}
+		}
+
+		/// <summary>
+		/// Отрисовывает выбор режимов смешивания
+		/// </summary>
+		private static void DrawSeamlessBlendModes(ShapeEditorWindow window)
+		{
+			GUILayout.Label("Blend Mode", Array.Empty<GUILayoutOption>());
+
+			string[] modes = new string[]
+			{
+				"Normal Blend",
+				"Surface Snap",
+				"Smooth Gradient",
+				"Texture Aware",
+				"Color Matching"
+			};
+
+			int modeIndex = (int)window.SeamlessBlendMode;
+			int newModeIndex = GUILayout.SelectionGrid(
+				modeIndex,
+				modes,
+				1,
+				"Button",
+				Array.Empty<GUILayoutOption>());
+
+			if (newModeIndex != modeIndex)
+			{
+				window.SeamlessBlendMode = (SeamlessBlendMode)newModeIndex;
+			}
+
+			// Описание текущего режима
+			string modeDescription = GetSeamlessModeDescription(window.SeamlessBlendMode);
+			GUILayout.Label(modeDescription,
+				new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 10 },
+				Array.Empty<GUILayoutOption>());
+		}
+
+		/// <summary>
+		/// Отрисовывает параметры смешивания (слайдеры)
+		/// </summary>
+		private static void DrawSeamlessBlendParameters(ShapeEditorWindow window)
+		{
+			GUILayout.Label("Blend Parameters", Array.Empty<GUILayoutOption>());
+
+			// Blend Distance
+			GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+			GUILayout.Label("Blend Distance", new GUILayoutOption[] { GUILayout.Width(120f) });
+			window.SeamlessBlendDistance = GUILayout.HorizontalSlider(
+				window.SeamlessBlendDistance,
+				0.001f,
+				0.1f,
+				Array.Empty<GUILayoutOption>());
+			GUILayout.Label(window.SeamlessBlendDistance.ToString("F4"), new GUILayoutOption[] { GUILayout.Width(60f) });
+			GUILayout.EndHorizontal();
+
+			// Border Strength
+			GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+			GUILayout.Label("Border Strength", new GUILayoutOption[] { GUILayout.Width(120f) });
+			window.SeamlessBorderStrength = GUILayout.HorizontalSlider(
+				window.SeamlessBorderStrength,
+				0f,
+				1f,
+				Array.Empty<GUILayoutOption>());
+			GUILayout.Label(window.SeamlessBorderStrength.ToString("F2"), new GUILayoutOption[] { GUILayout.Width(60f) });
+			GUILayout.EndHorizontal();
+
+			// Border Offset
+			GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+			GUILayout.Label("Border Offset", new GUILayoutOption[] { GUILayout.Width(120f) });
+			window.SeamlessBorderOffset = GUILayout.HorizontalSlider(
+				window.SeamlessBorderOffset,
+				-0.05f,
+				0.05f,
+				Array.Empty<GUILayoutOption>());
+			GUILayout.Label(window.SeamlessBorderOffset.ToString("F4"), new GUILayoutOption[] { GUILayout.Width(60f) });
+			GUILayout.EndHorizontal();
+
+			// Blend Strength
+			GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+			GUILayout.Label("Blend Strength", new GUILayoutOption[] { GUILayout.Width(120f) });
+			window.SeamlessBlendStrength = GUILayout.HorizontalSlider(
+				window.SeamlessBlendStrength,
+				0f,
+				1f,
+				Array.Empty<GUILayoutOption>());
+			GUILayout.Label(window.SeamlessBlendStrength.ToString("F2"), new GUILayoutOption[] { GUILayout.Width(60f) });
+			GUILayout.EndHorizontal();
+		}
+
+		/// <summary>
+		/// Отрисовывает кнопку применения Seamless Blend
+		/// </summary>
+		private static void DrawSeamlessApplyButton(ShapeEditorWindow window)
+		{
+			bool canApply = window.SeamlessCharacterIndex >= 0 &&
+				window.SeamlessCharacterIndex < window.SeamlessCharacters.Count &&
+				(window.SeamlessBodyEnabled || window.SeamlessHeadEnabled);
+
+			bool previousEnabled = GUI.enabled;
+			if (!canApply)
+			{
+				GUI.enabled = false;
+			}
+
+			if (GUILayout.Button("Apply Seamless Blend", new GUILayoutOption[] { GUILayout.Height(35f) }))
+			{
+				ApplySeamlessBlend(window);
+			}
+
+			GUI.enabled = previousEnabled;
+
+			if (!canApply)
+			{
+				GUILayout.Label("Select a character and at least one part",
+					new GUIStyle(GUI.skin.label) { normal = { textColor = Color.yellow }, wordWrap = true },
+					Array.Empty<GUILayoutOption>());
+			}
+		}
+
+		/// <summary>
+		/// Отрисовывает информационную панель
+		/// </summary>
+		private static void DrawSeamlessInfo(ShapeEditorWindow window)
+		{
+			GUILayout.Label("Info", 
+				new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, 
+				Array.Empty<GUILayoutOption>());
+
+			string infoText = "Seamless Blend: Smoothly blends seams between character meshes. " +
+				"Select target character, body/head parts, and adjust blend parameters. " +
+				"Click 'Apply Seamless Blend' to process.";
+
+			GUILayout.Label(infoText,
+				new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 10 },
+				Array.Empty<GUILayoutOption>());
+		}
+
+		/// <summary>
+		/// Применяет Seamless Blend к текущему выделению
+		/// </summary>
+		private static void ApplySeamlessBlend(ShapeEditorWindow window)
+		{
+			if (window == null || window.SeamlessCharacterIndex < 0)
+			{
+				return;
+			}
+
+			if (window.SeamlessCharacterIndex >= window.SeamlessCharacters.Count)
+			{
+				ShapeEditorPlugin.Logger.LogError("Invalid seamless character index");
+				return;
+			}
+
+			ShapeEditorWindow.SeamlessCharacterOption targetOption =
+				window.SeamlessCharacters[window.SeamlessCharacterIndex];
+
+			if (targetOption == null || targetOption.Character == null)
+			{
+				ShapeEditorPlugin.Logger.LogError("Target character is null");
+				return;
+			}
+
+			// Получаем целевые рендереры
+			List<Renderer> targetRenderers = new List<Renderer>();
+
+			if (window.SeamlessBodyEnabled)
+			{
+				Renderer bodyRenderer = FindCharacterBody(targetOption.Character);
+				if (bodyRenderer != null)
+				{
+					targetRenderers.Add(bodyRenderer);
+				}
+			}
+
+			if (window.SeamlessHeadEnabled)
+			{
+				Renderer headRenderer = FindCharacterHead(targetOption.Character);
+				if (headRenderer != null)
+				{
+					targetRenderers.Add(headRenderer);
+				}
+			}
+
+			if (targetRenderers.Count == 0)
+			{
+				ShapeEditorPlugin.Logger.LogWarning("No valid target renderers found");
+				return;
+			}
+
+			// Логируем применение
+			ShapeEditorPlugin.Logger.LogInfo($"Applying Seamless Blend to {targetOption.Name}");
+			ShapeEditorPlugin.Logger.LogInfo($"Mode: {window.SeamlessBlendMode}");
+			ShapeEditorPlugin.Logger.LogInfo($"Body: {window.SeamlessBodyEnabled}, Head: {window.SeamlessHeadEnabled}");
+			ShapeEditorPlugin.Logger.LogInfo($"Blend Distance: {window.SeamlessBlendDistance:F4}");
+			ShapeEditorPlugin.Logger.LogInfo($"Border Strength: {window.SeamlessBorderStrength:F2}");
+			ShapeEditorPlugin.Logger.LogInfo($"Blend Strength: {window.SeamlessBlendStrength:F2}");
+
+			// TODO: Здесь будет вызов实際 применения seamless blend функции
+			// ApplySeamlessBlendToRenderers(window.Renderers, targetRenderers, window);
+		}
+
+		/// <summary>
+		/// Возвращает описание текущего режима смешивания
+		/// </summary>
+		private static string GetSeamlessModeDescription(SeamlessBlendMode mode)
+		{
+			switch (mode)
+			{
+				case SeamlessBlendMode.Normal:
+					return "Basic blend: Smoothly interpolates vertices at seams.";
+				case SeamlessBlendMode.SurfaceSnap:
+					return "Surface Snap: Snaps vertices to target surface with offset correction.";
+				case SeamlessBlendMode.SmoothGradient:
+					return "Gradient: Creates smooth falloff gradient around seams.";
+				case SeamlessBlendMode.TextureAware:
+					return "Texture Aware: Considers texture boundaries for better blending.";
+				case SeamlessBlendMode.ColorMatching:
+					return "Color Matching: Blends vertex colors to match target mesh.";
+				default:
+					return "Unknown mode";
+			}
+		}
+
 		private static ShapeEditorWindow _window;
 		private static GameObject _overlayGo;
 		private static ShapePaintOverlay _overlay;
 		private static ShapeEditorController _subscribedCtrl;
+	}
+
+	/// <summary>
+	/// Перечисление режимов смешивания для Seamless Blend
+	/// </summary>
+	public enum SeamlessBlendMode
+	{
+		Normal = 0,
+		SurfaceSnap = 1,
+		SmoothGradient = 2,
+		TextureAware = 3,
+		ColorMatching = 4
 	}
 }
